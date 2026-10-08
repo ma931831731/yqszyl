@@ -20,6 +20,30 @@ export interface SystemEquipment {
   gamePlayDesc: string;
 }
 
+export interface EquipmentFunctionTier {
+  tierName: string;            // 完成度阶梯名称 (基础达标 / 熟练精通 / 满分化解)
+  minCompletionPercent: number; // 最小完成度百分比 (60 / 80 / 100)
+  rewardPoints: number;        // 奖励积分 (50 / 100 / 200)
+}
+
+export interface EquipmentFunctionItem {
+  id: string;
+  systemId: SystemId;
+  functionName: string;       // 功能装备名称 (如: 公文扫雷排错)
+  functionCode: string;       // 功能编码
+  description: string;        // 功能说明
+  tiers: EquipmentFunctionTier[]; // 完成度与积分规则
+}
+
+export interface CaseSubEvent {
+  id: string;
+  caseTitle: string;          // 真实案例事件名称 (如: 自媒体抹黑公文措辞误读)
+  phase: '发现' | '传播' | '跟踪' | '处置'; // 事件对应全流程阶段
+  description: string;        // 事件案情描述
+  requiredFunctionIds: string[]; // 本案例事件依赖调用的练兵场应用功能装备IDs
+  weightScore: number;        // 案例基础分值
+}
+
 export interface LevelIncidentCase {
   id: number;
   title: string;
@@ -32,6 +56,7 @@ export interface LevelIncidentCase {
   trackingDesc: string;    // 跟踪监控难度
   disposalDesc: string;    // 处置考核重点
   unlockedSystems: SystemId[];
+  caseEvents?: CaseSubEvent[]; // 关卡包含的多个真实案例事件及调用的应用功能组合
   isUnlocked: boolean;
   isPassed: boolean;
   bestScore: number | null; // 历史最高得分
