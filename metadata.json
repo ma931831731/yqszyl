@@ -1,0 +1,8 @@
+{
+  "name": "Remix Data Warehouse Portal \u0026 MT Management System",
+  "description": "数据仓库管理平台统一入口及 MT 管理端系统主框架",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
