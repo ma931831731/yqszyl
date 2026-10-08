@@ -21,81 +21,83 @@ export const SecretMessageView: React.FC<SecretMessageViewProps> = ({ onReturnTo
   };
 
   return (
-    <div className="min-h-screen bg-[#050814] bg-cyber-grid text-slate-100 p-6 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#09152b] text-slate-100 p-4 md:p-6 flex flex-col justify-between select-none font-sans relative z-10">
       
-      {/* Header */}
-      <div className="max-w-6xl mx-auto w-full flex items-center justify-between mb-6">
+      {/* 2D Cartoon Header Bar (yqyl.jfif Style) */}
+      <div className="max-w-6xl mx-auto w-full flex items-center justify-between mb-6 bg-[#1b2b4b] p-5 rounded-3xl border-4 border-sky-400 shadow-2xl">
         <button
           onClick={onReturnToLobby}
-          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs rounded-xl border border-slate-800 flex items-center gap-2 transition-all"
+          className="px-4 py-2 bg-[#0d1629] hover:bg-sky-600 text-white font-black text-xs rounded-2xl border-2 border-sky-400 flex items-center gap-2 transition-transform hover:scale-105 cursor-pointer shadow"
         >
           <ArrowLeft className="w-4 h-4" /> 返回主大厅
         </button>
 
         <div className="text-center">
-          <h1 className="text-2xl font-black font-cyber text-slate-100 flex items-center justify-center gap-2">
-            <MessageSquareText className="w-6 h-6 text-emerald-400" />
+          <h1 className="text-2xl md:text-3xl font-black text-white flex items-center justify-center gap-2 drop-shadow">
+            <MessageSquareText className="w-7 h-7 text-emerald-400" />
             密级通信 · 点点密信聊天大厅
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">跨部门端到端加密沟通 | 舆情处置指挥快速对接通道</p>
+          <p className="text-xs text-sky-100 font-bold mt-1">
+            跨部门端到端加密沟通 | 舆情处置指挥快速对接通道
+          </p>
         </div>
 
         <div className="w-28" />
       </div>
 
-      {/* Main Chat Layout (1920*1080 Spacious) */}
-      <div className="max-w-6xl mx-auto w-full flex-1 bg-slate-900/80 rounded-3xl border border-emerald-500/30 overflow-hidden flex shadow-2xl backdrop-blur-md my-auto h-[600px]">
+      {/* Main Chat Layout (2D RPG Style) */}
+      <div className="max-w-6xl mx-auto w-full flex-1 bg-[#1b2b4b] rounded-3xl border-4 border-sky-400 overflow-hidden flex shadow-2xl my-auto h-[600px]">
         
         {/* Left Channel Sidebar */}
-        <div className="w-72 bg-slate-950/80 border-r border-slate-800 p-4 space-y-2">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5 text-emerald-400" /> 加密通信频道
+        <div className="w-72 bg-[#0d1629] border-r-2 border-sky-400/40 p-4 space-y-3">
+          <div className="text-xs font-black text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Lock className="w-4 h-4 text-emerald-400" /> 加密通信频道
           </div>
 
           <button
             onClick={() => setActiveChannel('laoyan')}
-            className={`w-full p-3 rounded-2xl text-left transition-all border ${
+            className={`w-full p-3.5 rounded-2xl text-left transition-all border-2 cursor-pointer ${
               activeChannel === 'laoyan'
-                ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/40 glow-cyan'
-                : 'bg-slate-900/50 text-slate-300 border-slate-850 hover:bg-slate-800'
+                ? 'bg-[#182645] text-white border-amber-400 shadow-md'
+                : 'bg-[#121c33] text-slate-300 border-slate-700 hover:border-slate-500'
             }`}
           >
-            <div className="font-bold text-sm">老严教官 (指导中心)</div>
-            <div className="text-[11px] text-slate-400 mt-1 truncate">收到！属地发文排错...</div>
+            <div className="font-black text-sm text-sky-300">老严教官 (指导中心)</div>
+            <div className="text-[11px] text-slate-300 font-bold mt-1 truncate">收到！属地发文排错...</div>
           </button>
 
           <button
             onClick={() => setActiveChannel('net-admin')}
-            className={`w-full p-3 rounded-2xl text-left transition-all border ${
+            className={`w-full p-3.5 rounded-2xl text-left transition-all border-2 cursor-pointer ${
               activeChannel === 'net-admin'
-                ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/40 glow-cyan'
-                : 'bg-slate-900/50 text-slate-300 border-slate-850 hover:bg-slate-800'
+                ? 'bg-[#182645] text-white border-amber-400 shadow-md'
+                : 'bg-[#121c33] text-slate-300 border-slate-700 hover:border-slate-500'
             }`}
           >
-            <div className="font-bold text-sm">网信应急处置指挥群</div>
-            <div className="text-[11px] text-slate-400 mt-1 truncate">属地媒体已就位</div>
+            <div className="font-black text-sm text-sky-300">网信应急处置指挥群</div>
+            <div className="text-[11px] text-slate-300 font-bold mt-1 truncate">属地媒体已就位</div>
           </button>
         </div>
 
         {/* Right Message Body */}
-        <div className="flex-1 flex flex-col justify-between p-6 bg-slate-950/40">
+        <div className="flex-1 flex flex-col justify-between p-6 bg-[#121c33]">
           
           {/* Messages Feed */}
           <div className="space-y-4 overflow-y-auto pr-2 max-h-[460px]">
             {chatLogs.map((msg) => (
               <div key={msg.id} className={`flex gap-3 ${msg.isSelf ? 'flex-row-reverse' : ''}`}>
-                <div className={`w-9 h-9 rounded-2xl flex items-center justify-center font-bold text-xs ${
-                  msg.isSelf ? 'bg-cyan-500 text-slate-950' : 'bg-emerald-950 text-emerald-300 border border-emerald-500/40'
+                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs border-2 border-white shadow ${
+                  msg.isSelf ? 'bg-amber-400 text-slate-950' : 'bg-sky-400 text-slate-950'
                 }`}>
                   {msg.isSelf ? '卫' : '严'}
                 </div>
 
-                <div className={`p-4 rounded-2xl max-w-[75%] border text-xs leading-relaxed ${
+                <div className={`p-4 rounded-2xl max-w-[75%] border-2 text-xs leading-relaxed font-bold shadow-md ${
                   msg.isSelf
-                    ? 'bg-cyan-950/60 border-cyan-500/40 text-slate-100 text-right'
-                    : 'bg-slate-900 border-slate-800 text-slate-200'
+                    ? 'bg-[#182645] border-amber-400 text-white text-right'
+                    : 'bg-[#0d1629] border-sky-400/50 text-slate-100'
                 }`}>
-                  <div className="font-bold text-[10px] text-slate-400 mb-1">{msg.sender}</div>
+                  <div className="font-black text-[10px] text-amber-300 mb-1">{msg.sender}</div>
                   <p>{msg.text}</p>
                 </div>
               </div>
@@ -103,17 +105,17 @@ export const SecretMessageView: React.FC<SecretMessageViewProps> = ({ onReturnTo
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSend} className="pt-4 border-t border-slate-800 flex gap-3">
+          <form onSubmit={handleSend} className="pt-4 border-t-2 border-sky-400/40 flex gap-3">
             <input
               type="text"
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
               placeholder="输入加密密信指令发送至频道..."
-              className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
+              className="flex-1 bg-[#0d1629] border-2 border-slate-700 focus:border-sky-400 rounded-2xl px-4 py-3 text-xs text-white font-bold focus:outline-none"
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg glow-cyan flex items-center gap-1.5 transition-all"
+              className="px-6 py-3 bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 hover:to-yellow-200 text-slate-950 font-black text-xs rounded-2xl shadow-lg border-2 border-white flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-105"
             >
               <Send className="w-4 h-4" /> 发送密信
             </button>
@@ -126,3 +128,4 @@ export const SecretMessageView: React.FC<SecretMessageViewProps> = ({ onReturnTo
     </div>
   );
 };
+

@@ -143,7 +143,7 @@ export const App: React.FC = () => {
     }
   ]);
 
-  // Certificates Collection (Lit up based on score & levels)
+  // Certificates Collection (8 Equipment Certificates from Practice Camps)
   const [certificates, setCertificates] = useState<UserCertificate[]>([
     {
       id: 'cert1',
@@ -166,6 +166,16 @@ export const App: React.FC = () => {
       creditHours: 4
     },
     {
+      id: 'cert_quanwang',
+      name: '全网探针打标与证据打捞证书',
+      code: 'V8-2026-SEARCH-5521',
+      isLitUp: false,
+      levelRequired: 1,
+      minScoreRequired: 90,
+      description: '证明学员已掌握全网搜精准搜索、谣言帖快速识别打标与证据链归档能力。',
+      creditHours: 3
+    },
+    {
       id: 'cert3',
       name: '多部门加密通信与指令闭环认证证书',
       code: 'V8-2026-ZHIHUI-7419',
@@ -176,13 +186,43 @@ export const App: React.FC = () => {
       creditHours: 4
     },
     {
+      id: 'cert_zhihui',
+      name: '应急处置指令流转闭环能力证书',
+      code: 'V8-2026-FLOW-3312',
+      isLitUp: false,
+      levelRequired: 3,
+      minScoreRequired: 90,
+      description: '证明学员熟练掌握应急公文全生命周期流转、签批下发与处置时效闭环能力。',
+      creditHours: 3
+    },
+    {
+      id: 'cert_wangping',
+      name: '网评战术矩阵对抗能力证书',
+      code: 'V8-2026-COMMENT-9921',
+      isLitUp: false,
+      levelRequired: 4,
+      minScoreRequired: 90,
+      description: '证明学员具备运用网评系统“赞/转/评/报”四维战术矩阵对抗网络水军的能力。',
+      creditHours: 4
+    },
+    {
+      id: 'cert_quanqiu',
+      name: '境外源头阻断与天眼防范证书',
+      code: 'V8-2026-GLOBAL-8814',
+      isLitUp: false,
+      levelRequired: 5,
+      minScoreRequired: 95,
+      description: '证明学员具备全球眼跨国平台监测、推特源头推文深度研判与境内倒灌阻断能力。',
+      creditHours: 5
+    },
+    {
       id: 'cert4',
       name: '全域舆情应急推演通关防伪总证书',
       code: 'V8-2026-MASTER-0001',
       isLitUp: false,
       levelRequired: 6,
       minScoreRequired: 95,
-      description: 'V8 平台官方最高权威认证，通关全部 6 大关卡，精通 8 大软件装备。',
+      description: 'V8 平台官方最高权威认证，通关全部 6 大实战演练场，精通 8 大软件装备。',
       creditHours: 8
     }
   ]);
@@ -243,12 +283,16 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#060a14] font-sans antialiased text-slate-100 select-none">
       
-      {/* ROUTE 1: ENTRY PORTAL (系统入口选择器 - Cocos 养成系主基地 / V8 客户端 / MT 管理端) */}
+      {/* ROUTE 1: ENTRY PORTAL (系统入口选择器 - 100% 契合 yqyl.jfif 整体入口) */}
       {viewMode === 'portal' && (
         <PortalSelection
           onSelectCocosGrowth={() => setViewMode('cocos-base')}
           onSelectV8Client={() => setViewMode('v8-lobby')}
           onSelectMTAdmin={() => setViewMode('mt-admin')}
+          onSelectPractice={() => setViewMode('v8-practice')}
+          onSelectBattlefield={() => setViewMode('v8-level-select')}
+          onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+          onOpenProfile={() => setIsProfileOpen(true)}
         />
       )}
 
@@ -279,17 +323,21 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* ROUTE 3: NOVICE TARGET PRACTICE (练兵场新手指引特训) */}
+      {/* ROUTE 3: NOVICE TARGET PRACTICE (练兵场 · 8大练兵营特训与装备升级颁证) */}
       {viewMode === 'v8-practice' && (
-        <TargetPracticeView
-          onReturnToBattle={() => {
-            setIsPracticeCompleted(true);
-            setViewMode('v8-lobby');
-          }}
-        />
+        <div className="min-h-screen bg-[#09152b] py-6">
+          <TargetPracticeView
+            certificates={certificates}
+            onUnlockCertificate={(certId) => {
+              setCertificates(prev => prev.map(c => c.id === certId ? { ...c, isLitUp: true } : c));
+            }}
+            onAddEquipmentScore={(pts) => setTotalScore(prev => prev + pts)}
+            onReturnToBattle={() => setViewMode('portal')}
+          />
+        </div>
       )}
 
-      {/* ROUTE 4: LEVEL SELECTION MAP (实战演练关卡图谱) */}
+      {/* ROUTE 4: LEVEL SELECTION MAP (实战演练室 · 演练场分块案例大厅) */}
       {viewMode === 'v8-level-select' && (
         <LevelSelectionView
           levelCases={levelCases}
@@ -297,31 +345,31 @@ export const App: React.FC = () => {
             setActiveLevelId(levelId);
             setViewMode('v8-battlefield');
           }}
-          onReturnToLobby={() => setViewMode('v8-lobby')}
+          onReturnToLobby={() => setViewMode('portal')}
         />
       )}
 
       {/* ROUTE 5: 1920*1080 BATTLEFIELD VIEW (推演作战室) */}
       {viewMode === 'v8-battlefield' && (
-        <div className="min-h-screen p-4 flex flex-col justify-between">
-          <div className="flex items-center justify-between bg-slate-950/80 p-3 rounded-2xl border border-slate-800 mb-3 text-xs">
+        <div className="min-h-screen bg-[#09152b] p-4 flex flex-col justify-between">
+          <div className="flex items-center justify-between bg-[#1b2b4b] p-4 rounded-3xl border-4 border-sky-400 mb-4 text-xs shadow-xl">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setViewMode('v8-level-select')}
-                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold rounded-xl border border-slate-800"
+                className="px-4 py-2 bg-[#0d1629] hover:bg-sky-600 text-white font-black rounded-2xl border-2 border-sky-400 cursor-pointer transition-transform hover:scale-105"
               >
-                ➔ 退出战场返回关卡
+                ➔ 退出实战演练室
               </button>
-              <span className="font-bold text-cyan-300">
-                【第{activeLevelId}关推演中】{levelCases.find(l => l.id === activeLevelId)?.title}
+              <span className="font-black text-amber-300 text-sm drop-shadow">
+                【演练场 {activeLevelId} 实战推演中】{levelCases.find(l => l.id === activeLevelId)?.title}
               </span>
             </div>
 
             <button
               onClick={handlePassLevel}
-              className="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold rounded-xl shadow-lg glow-gold"
+              className="px-6 py-2.5 bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 hover:to-yellow-200 text-slate-950 font-black text-xs rounded-2xl shadow-xl border-2 border-white cursor-pointer transition-transform hover:scale-105"
             >
-              ★ 触发通关 & 战力结算
+              ★ 通关当前案例 & 触发战力结算
             </button>
           </div>
 
@@ -342,10 +390,10 @@ export const App: React.FC = () => {
 
       {/* ROUTE 6: SECRET MESSAGES CHAT (点点密信) */}
       {viewMode === 'v8-secret-chat' && (
-        <SecretMessageView onReturnToLobby={() => setViewMode('v8-lobby')} />
+        <SecretMessageView onReturnToLobby={() => setViewMode('portal')} />
       )}
 
-      {/* ROUTE 7: MT MANAGEMENT ADMIN (MT 管理端) */}
+      {/* ROUTE 7: MT MANAGEMENT ADMIN (MT 管理端保持冰蓝企业风格不变) */}
       {viewMode === 'mt-admin' && (
         <MTAdminView
           onReturnToPortal={() => setViewMode('portal')}
@@ -369,8 +417,9 @@ export const App: React.FC = () => {
         onClose={() => setIsSettlementOpen(false)}
         trustScore={trustScore}
         fixedErrorsCount={documentErrors.filter(e => e.isFixed).length}
-        levelTitle={`第${activeLevelId}关·${levelCases.find(l => l.id === activeLevelId)?.title}`}
+        levelTitle={`演练场 ${activeLevelId} · ${levelCases.find(l => l.id === activeLevelId)?.title}`}
         nextLevelId={activeLevelId + 1}
+        equipmentScore={1250}
       />
 
       <LeaderboardModal
