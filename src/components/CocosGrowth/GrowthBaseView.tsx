@@ -5,7 +5,7 @@ import {
   Home, Play, Coins, ShieldAlert, Cpu, Radio, Target, Search, MessageSquareText,
   FileText, Globe, ShieldCheck
 } from 'lucide-react';
-import { BaseFacility, OfficerItem, GameResources, EmergencyEvent, LevelIncidentCase } from '../../types';
+import { BaseFacility, OfficerItem, GameResources, EmergencyEvent } from '../../types';
 
 interface GrowthBaseViewProps {
   onReturnToPortal: () => void;
@@ -148,7 +148,6 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
   // Real-time Resource Idle Ticker (Every 1 Second)
   useEffect(() => {
     const timer = setInterval(() => {
-      // Calculate total production per second
       let totalDataInc = 0;
       let totalComputeInc = 0;
 
@@ -167,7 +166,6 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
         goldCoins: prev.goldCoins + 2
       }));
 
-      // Count down emergency events
       setEvents(prev => prev.map(ev => {
         if (ev.status === '待处置' && ev.timeLeftSeconds > 0) {
           return { ...ev, timeLeftSeconds: ev.timeLeftSeconds - 1 };
@@ -190,7 +188,6 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
       return;
     }
 
-    // Deduct resources & level up facility
     setResources(prev => ({
       ...prev,
       dataPoints: prev.dataPoints - target.upgradeCostData,
@@ -228,7 +225,7 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
     }));
 
     setEvents(prev => prev.filter(e => e.id !== eventId));
-    setLogMessages(prev => [`⚔️ 已成功化解【${ev.title}】，获得情报点 +${ev.rewardData}，经费 +${ev.rewardGold}！`, ...prev.slice(0, 5)]);
+    setLogMessages(prev => [`⚔️ 已化解【${ev.title}】，获得情报点 +${ev.rewardData}，经费 +${ev.rewardGold}！`, ...prev.slice(0, 5)]);
   };
 
   const getFacilityIcon = (id: string) => {
@@ -246,73 +243,69 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#050814] bg-cyber-grid text-slate-100 flex flex-col justify-between p-4 md:p-6 select-none relative overflow-hidden">
+    <div className="min-h-screen bg-[#091122] text-slate-100 flex flex-col justify-between p-4 md:p-6 select-none relative overflow-hidden font-sans">
       
-      {/* Background Glow Effects */}
-      <div className="absolute top-10 left-1/3 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* TOP RESOURCE & STATUS BAR (养成系引擎资源条) */}
-      <header className="bg-slate-900/90 backdrop-blur-md border border-cyan-500/40 p-4 rounded-3xl shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-4 z-20 glow-cyan">
+      {/* TOP RESOURCE & STATUS BAR */}
+      <header className="bg-[#121c33] border-2 border-slate-700 p-4 rounded-2xl shadow-xl flex flex-col lg:flex-row items-center justify-between gap-4 z-20">
         
         {/* Commander Identity & Badge */}
         <div className="flex items-center gap-4 cursor-pointer" onClick={onOpenProfile}>
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-600 flex items-center justify-center font-black text-2xl text-slate-950 shadow-lg glow-gold">
+          <div className="w-14 h-14 rounded-xl bg-amber-500 flex items-center justify-center font-black text-2xl text-slate-950 shadow">
             统
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-black font-cyber text-slate-100">
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl font-black text-white tracking-wide">
                 风暴中枢 · 舆情基地 (Cocos 养成版)
               </h1>
-              <span className="px-3 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 font-bold text-xs flex items-center gap-1">
-                <Flame className="w-3.5 h-3.5 fill-current" /> LV.5 指挥官
+              <span className="px-3 py-1 rounded-lg bg-amber-500/20 border border-amber-500/50 text-amber-300 font-extrabold text-xs flex items-center gap-1.5">
+                <Flame className="w-4 h-4 fill-current" /> LV.5 指挥官
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              基地状态：设施自动巡航中 | 情报点与算力实时翻倍产出中...
+            <p className="text-xs text-slate-300 font-medium mt-1">
+              基地运行状态：8大设施自动巡航中 | 情报点与算力实时翻倍产出中
             </p>
           </div>
         </div>
 
-        {/* Real-time Game Resources Counters */}
-        <div className="flex flex-wrap items-center gap-3 bg-slate-950/80 px-4 py-2.5 rounded-2xl border border-slate-800">
+        {/* Real-time Game Resources Counters (High Contrast) */}
+        <div className="flex flex-wrap items-center gap-3 bg-[#0a1020] px-4 py-2.5 rounded-xl border border-slate-750">
           
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-xl border border-slate-800" title="基地公信力">
+          <div className="flex items-center gap-2.5 px-3 py-1.5 bg-[#121c33] rounded-lg border border-slate-700" title="基地公信力">
             <Shield className="w-4 h-4 text-emerald-400" />
             <div>
-              <div className="text-[10px] text-slate-500">公信力</div>
-              <div className="font-bold text-xs text-emerald-400 font-num">{resources.trustScore} PTS</div>
+              <div className="text-xs text-slate-400 font-semibold">公信力</div>
+              <div className="font-black text-sm text-emerald-400 font-num">{resources.trustScore} PTS</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-xl border border-slate-800" title="实时情报点产出">
-            <Database className="w-4 h-4 text-cyan-400 animate-pulse" />
+          <div className="flex items-center gap-2.5 px-3 py-1.5 bg-[#121c33] rounded-lg border border-slate-700" title="实时情报点产出">
+            <Database className="w-4 h-4 text-cyan-400" />
             <div>
-              <div className="text-[10px] text-slate-500">情报点</div>
-              <div className="font-bold text-xs text-cyan-300 font-num">{resources.dataPoints.toLocaleString()}</div>
+              <div className="text-xs text-slate-400 font-semibold">情报点</div>
+              <div className="font-black text-sm text-cyan-300 font-num">{resources.dataPoints.toLocaleString()}</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-xl border border-slate-800" title="舆情算力">
+          <div className="flex items-center gap-2.5 px-3 py-1.5 bg-[#121c33] rounded-lg border border-slate-700" title="舆情算力">
             <Cpu className="w-4 h-4 text-purple-400" />
             <div>
-              <div className="text-[10px] text-slate-500">舆情算力</div>
-              <div className="font-bold text-xs text-purple-300 font-num">{resources.computePower.toLocaleString()}</div>
+              <div className="text-xs text-slate-400 font-semibold">舆情算力</div>
+              <div className="font-black text-sm text-purple-300 font-num">{resources.computePower.toLocaleString()}</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-xl border border-slate-800" title="应急经费">
+          <div className="flex items-center gap-2.5 px-3 py-1.5 bg-[#121c33] rounded-lg border border-slate-700" title="应急经费">
             <Coins className="w-4 h-4 text-amber-400" />
             <div>
-              <div className="text-[10px] text-slate-500">应急经费</div>
-              <div className="font-bold text-xs text-amber-300 font-num">￥{resources.goldCoins.toLocaleString()}</div>
+              <div className="text-xs text-slate-400 font-semibold">应急经费</div>
+              <div className="font-black text-sm text-amber-300 font-num">￥{resources.goldCoins.toLocaleString()}</div>
             </div>
           </div>
 
           <button
             onClick={() => setIsRosterOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-lg glow-cyan flex items-center gap-1.5 transition-transform hover:scale-105 cursor-pointer"
+            className="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold text-xs rounded-xl shadow flex items-center gap-2 transition-transform hover:scale-105 cursor-pointer border border-cyan-400/40"
           >
             <Users className="w-4 h-4" />
             <span>特聘干员大厅 ({officers.length})</span>
@@ -320,7 +313,7 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
 
           <button
             onClick={onReturnToPortal}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition-colors"
+            className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-650 transition-colors cursor-pointer"
             title="返回系统主门头"
           >
             <Home className="w-4 h-4" />
@@ -330,50 +323,50 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
 
       </header>
 
-      {/* MAIN 2.5D BASE MAP & WORKSPACE */}
+      {/* MAIN BASE MAP & WORKSPACE */}
       <main className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 my-4 items-stretch z-10">
         
-        {/* LEFT PANEL: EMERGENCY EVENTS & BASE RECENT LOGS */}
+        {/* LEFT PANEL: EMERGENCY EVENTS & RECENT LOGS */}
         <div className="lg:col-span-1 space-y-4 flex flex-col">
           
           {/* Emergency Events Queue Panel */}
-          <div className="bg-slate-900/80 backdrop-blur-md rounded-3xl border border-rose-500/30 p-4 shadow-xl space-y-3">
+          <div className="bg-[#121c33] rounded-2xl border-2 border-slate-700 p-4 shadow-xl space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 font-bold text-sm text-rose-300">
-                <AlertTriangle className="w-4 h-4 text-rose-400 animate-bounce" />
+              <div className="flex items-center gap-2 font-black text-sm text-rose-300">
+                <AlertTriangle className="w-4 h-4 text-rose-400" />
                 <span>突发舆情处置队列 ({events.length})</span>
               </div>
-              <span className="text-[10px] text-slate-400">派遣干员秒化解</span>
+              <span className="text-xs text-slate-400 font-medium">派遣干员秒化解</span>
             </div>
 
             <div className="space-y-2.5">
               {events.length === 0 ? (
-                <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 text-center text-xs text-slate-500">
+                <div className="p-4 rounded-xl bg-[#0a1020] border border-slate-700 text-center text-xs text-slate-300 font-medium">
                   🎉 当前无突发危机，全省网络空间安全稳定！
                 </div>
               ) : (
                 events.map(ev => (
-                  <div key={ev.id} className="p-3 rounded-2xl bg-slate-950/90 border border-rose-500/40 space-y-2 relative overflow-hidden">
+                  <div key={ev.id} className="p-3.5 rounded-xl bg-[#0a1020] border border-rose-500/50 space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 text-[10px] font-bold border border-rose-500/40">
+                      <span className="px-2.5 py-0.5 rounded bg-rose-950 text-rose-200 text-xs font-bold border border-rose-500/40">
                         {ev.difficulty}
                       </span>
-                      <div className="flex items-center gap-1 text-[10px] text-amber-400 font-num">
-                        <Clock className="w-3 h-3" />
+                      <div className="flex items-center gap-1 text-xs text-amber-400 font-num font-bold">
+                        <Clock className="w-3.5 h-3.5" />
                         <span>倒计时: {ev.timeLeftSeconds}s</span>
                       </div>
                     </div>
 
                     <div>
-                      <div className="font-bold text-xs text-slate-200">{ev.title}</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">需求角色：{ev.requiredRole}</div>
+                      <div className="font-extrabold text-xs text-white leading-snug">{ev.title}</div>
+                      <div className="text-xs text-slate-300 font-medium mt-1">需求角色：{ev.requiredRole}</div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px]">
-                      <span className="text-cyan-300">奖励: +{ev.rewardData} 情报 / +${ev.rewardGold}</span>
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-750 text-xs">
+                      <span className="text-cyan-300 font-bold">奖励: +{ev.rewardData}情报 / +${ev.rewardGold}</span>
                       <button
                         onClick={() => handleResolveEvent(ev.id)}
-                        className="px-3 py-1 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg shadow transition-colors cursor-pointer"
+                        className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-lg shadow transition-colors cursor-pointer text-xs"
                       >
                         立即派遣处置 ➔
                       </button>
@@ -385,14 +378,14 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
           </div>
 
           {/* Real-time Ticker Logs */}
-          <div className="flex-1 bg-slate-900/80 backdrop-blur-md rounded-3xl border border-slate-800 p-4 shadow-xl flex flex-col justify-between">
-            <div className="font-bold text-xs text-slate-300 mb-2 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="flex-1 bg-[#121c33] rounded-2xl border-2 border-slate-700 p-4 shadow-xl flex flex-col justify-between">
+            <div className="font-black text-sm text-white mb-2 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
               <span>基地日志与产出动态</span>
             </div>
-            <div className="space-y-1.5 flex-1 overflow-y-auto pr-1">
+            <div className="space-y-2 flex-1 overflow-y-auto pr-1">
               {logMessages.map((log, idx) => (
-                <div key={idx} className="p-2 rounded-xl bg-slate-950/60 border border-slate-850 text-[10px] text-slate-300 leading-relaxed">
+                <div key={idx} className="p-2.5 rounded-xl bg-[#0a1020] border border-slate-750 text-xs text-slate-200 font-medium leading-relaxed">
                   {log}
                 </div>
               ))}
@@ -401,75 +394,75 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
 
         </div>
 
-        {/* CENTER PANEL: 8 BASE BUILDINGS CAMPUS MAP (8大科技建筑升级与布局) */}
-        <div className="lg:col-span-2 bg-slate-900/70 backdrop-blur-md rounded-3xl border border-cyan-500/30 p-5 shadow-2xl flex flex-col justify-between relative overflow-hidden">
+        {/* CENTER PANEL: 8 BASE BUILDINGS CAMPUS MAP */}
+        <div className="lg:col-span-2 bg-[#121c33] rounded-2xl border-2 border-slate-700 p-5 shadow-xl flex flex-col justify-between relative overflow-hidden">
           
           {/* Base Map Header */}
-          <div className="flex items-center justify-between mb-3 relative z-10">
+          <div className="flex items-center justify-between mb-4 relative z-10">
             <div>
-              <h2 className="text-lg font-black font-cyber text-slate-100 flex items-center gap-2">
+              <h2 className="text-xl font-black text-white flex items-center gap-2 tracking-wide">
                 <Building2 className="w-5 h-5 text-cyan-400" />
                 <span>舆情基地建筑全景图</span>
               </h2>
-              <p className="text-xs text-slate-400">点击建筑进行升级、分配驻扎干员并提升自动情报产出率</p>
+              <p className="text-xs text-slate-300 font-medium mt-0.5">点击建筑进行升级、分配驻扎干员并提升自动情报产出率</p>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 onClick={onOpenPractice}
-                className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs rounded-xl flex items-center gap-1 cursor-pointer"
+                className="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 font-extrabold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer"
               >
-                <Target className="w-3.5 h-3.5" />
+                <Target className="w-4 h-4" />
                 <span>进入特训靶场</span>
               </button>
               
               <button
                 onClick={onOpenLevelSelect}
-                className="px-4 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-lg glow-cyan flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs rounded-xl shadow flex items-center gap-2 cursor-pointer border border-cyan-400/40"
               >
-                <Play className="w-3.5 h-3.5 fill-current" />
+                <Play className="w-4 h-4 fill-current" />
                 <span>出征推演关卡 ➔</span>
               </button>
             </div>
           </div>
 
-          {/* 8 Tech Facilities Grid (2.5D Interactive Map) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
+          {/* 8 Tech Facilities Grid (High Readability) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 relative z-10">
             {facilities.map(fac => {
               const assignedOfficer = officers.find(o => o.id === fac.assignedOfficerId);
               return (
                 <div
                   key={fac.id}
                   onClick={() => setSelectedFacility(fac)}
-                  className="p-3.5 rounded-2xl bg-slate-950/80 border-2 border-slate-800 hover:border-cyan-400 transition-all cursor-pointer group relative overflow-hidden flex flex-col justify-between h-36 shadow-lg"
+                  className="p-4 rounded-xl bg-[#0a1020] border-2 border-slate-700 hover:border-cyan-400 transition-all cursor-pointer group flex flex-col justify-between h-40 shadow-md"
                 >
                   {/* Facility Card Top Info */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <div className="p-2 rounded-xl bg-slate-900 border border-slate-800 group-hover:scale-110 transition-transform">
+                      <div className="p-2 rounded-lg bg-[#121c33] border border-slate-700 group-hover:scale-105 transition-transform">
                         {getFacilityIcon(fac.id)}
                       </div>
-                      <span className="px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/40 text-[10px] font-black font-num">
+                      <span className="px-2.5 py-0.5 rounded bg-cyan-900 text-cyan-200 border border-cyan-500/50 text-xs font-black font-num">
                         LV.{fac.level}
                       </span>
                     </div>
 
-                    <div className="font-bold text-xs text-slate-100 group-hover:text-cyan-300 transition-colors truncate">
+                    <div className="font-black text-sm text-white group-hover:text-cyan-300 transition-colors truncate">
                       {fac.buildingName}
                     </div>
-                    <div className="text-[10px] text-slate-500 truncate">{fac.name}</div>
+                    <div className="text-xs text-slate-300 font-medium truncate mt-0.5">{fac.name}</div>
                   </div>
 
                   {/* Facility Bottom Status & Assigned Officer */}
-                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-                    <span className="text-cyan-400 font-num">+{fac.dataRatePerSec}点/s</span>
+                  <div className="pt-2 border-t border-slate-750 flex items-center justify-between text-xs">
+                    <span className="text-cyan-300 font-bold font-num">+{fac.dataRatePerSec}点/s</span>
                     {assignedOfficer ? (
-                      <span className="px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-500/30 text-[9px] flex items-center gap-0.5">
+                      <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-200 border border-amber-500/50 text-xs font-bold flex items-center gap-1">
                         <span>{assignedOfficer.avatar}</span>
-                        <span className="truncate max-w-[45px]">{assignedOfficer.name}</span>
+                        <span className="truncate max-w-[50px]">{assignedOfficer.name}</span>
                       </span>
                     ) : (
-                      <span className="text-slate-600 text-[9px]">点击升级/驻扎</span>
+                      <span className="text-slate-400 text-xs font-semibold">可驻扎</span>
                     )}
                   </div>
                 </div>
@@ -478,14 +471,14 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
           </div>
 
           {/* Bottom Interactive Guidance */}
-          <div className="mt-3 p-3 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-xs relative z-10">
-            <div className="flex items-center gap-2 text-slate-300">
+          <div className="mt-4 p-3.5 rounded-xl bg-[#0a1020] border border-slate-700 flex items-center justify-between text-xs relative z-10">
+            <div className="flex items-center gap-2 text-slate-200 font-medium">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>小贴士：给【谛听天眼】与【属地审校所】派遣驻扎特聘干员，可额外获得 +25% 情报产出加成！</span>
+              <span>小贴士：给【谛听天眼】与【属地审校所】驻扎特聘干员，可额外获得 +25% 情报产出加成！</span>
             </div>
             <button
               onClick={() => setIsRosterOpen(true)}
-              className="text-cyan-400 hover:text-cyan-300 font-bold underline text-xs cursor-pointer"
+              className="text-cyan-300 hover:text-cyan-200 font-extrabold underline text-xs cursor-pointer"
             >
               管理人员驻扎 ➔
             </button>
@@ -493,50 +486,50 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
 
         </div>
 
-        {/* RIGHT PANEL: COMMANDER POWER & STATS (五维属性与防伪勋章墙) */}
+        {/* RIGHT PANEL: COMMANDER POWER & STATS */}
         <div className="lg:col-span-1 space-y-4 flex flex-col justify-between">
           
           {/* Commander Battle Power Box */}
-          <div className="bg-slate-900/80 backdrop-blur-md rounded-3xl border border-amber-500/30 p-4 shadow-xl space-y-3">
+          <div className="bg-[#121c33] rounded-2xl border-2 border-slate-700 p-4 shadow-xl space-y-3.5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 font-bold text-sm text-amber-300">
+              <div className="flex items-center gap-2 font-black text-sm text-amber-300">
                 <Award className="w-4 h-4 text-amber-400" />
                 <span>基地总舆情战力</span>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-black text-[10px]">
+              <span className="px-2.5 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-xs">
                 S+ 级战队
               </span>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-950/90 border border-amber-500/40 text-center">
-              <div className="text-[10px] text-slate-400 mb-0.5">全省舆情应急推演总评分</div>
+            <div className="p-3.5 rounded-xl bg-[#0a1020] border border-amber-500/40 text-center">
+              <div className="text-xs text-slate-300 font-semibold mb-0.5">全省舆情应急推演总评分</div>
               <div className="text-3xl font-black font-num text-amber-400 tracking-wider">
-                14,850 <span className="text-xs font-normal text-slate-400">PTS</span>
+                14,850 <span className="text-xs font-normal text-slate-300">PTS</span>
               </div>
             </div>
 
-            <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between text-slate-300 text-[11px]">
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between text-slate-200 font-bold">
                 <span>分析力 (谛听预警)</span>
-                <span className="text-amber-400 font-bold">95 / 100</span>
+                <span className="text-amber-400 font-black">95 / 100</span>
               </div>
-              <div className="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-[#0a1020] rounded-full h-2 overflow-hidden border border-slate-700">
                 <div className="bg-amber-400 h-full rounded-full w-[95%]" />
               </div>
 
-              <div className="flex justify-between text-slate-300 text-[11px]">
+              <div className="flex justify-between text-slate-200 font-bold">
                 <span>扫雷精准度 (属地公文)</span>
-                <span className="text-cyan-400 font-bold">92 / 100</span>
+                <span className="text-cyan-300 font-black">92 / 100</span>
               </div>
-              <div className="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-[#0a1020] rounded-full h-2 overflow-hidden border border-slate-700">
                 <div className="bg-cyan-400 h-full rounded-full w-[92%]" />
               </div>
 
-              <div className="flex justify-between text-slate-300 text-[11px]">
+              <div className="flex justify-between text-slate-200 font-bold">
                 <span>反击火力 (网评兵团)</span>
-                <span className="text-rose-400 font-bold">88 / 100</span>
+                <span className="text-rose-400 font-black">88 / 100</span>
               </div>
-              <div className="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-[#0a1020] rounded-full h-2 overflow-hidden border border-slate-700">
                 <div className="bg-rose-400 h-full rounded-full w-[88%]" />
               </div>
             </div>
@@ -545,13 +538,13 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
           {/* Quick Certificate Wall Entry */}
           <div
             onClick={onOpenProfile}
-            className="p-4 rounded-3xl bg-slate-900/80 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer shadow-xl flex items-center justify-between group"
+            className="p-4 rounded-2xl bg-[#121c33] border-2 border-slate-700 hover:border-indigo-400 transition-all cursor-pointer shadow-xl flex items-center justify-between group"
           >
             <div>
-              <div className="font-bold text-xs text-indigo-300 group-hover:text-indigo-200">
+              <div className="font-extrabold text-sm text-indigo-300 group-hover:text-indigo-200">
                 防伪通关证书与勋章墙
               </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">已点亮 2 / 4 本权威学时证书</div>
+              <div className="text-xs text-slate-300 font-medium mt-0.5">已点亮 2 / 4 本权威学时证书</div>
             </div>
             <ChevronRight className="w-5 h-5 text-indigo-400 group-hover:translate-x-1 transition-transform" />
           </div>
@@ -562,36 +555,36 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
 
       {/* FACILITY UPGRADE MODAL */}
       {selectedFacility && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border-2 border-cyan-500/50 w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#121c33] border-2 border-slate-650 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4">
             
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-700 pb-3">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-slate-950 rounded-2xl border border-cyan-500/40">
+                <div className="p-3 bg-[#0a1020] rounded-xl border border-slate-700">
                   {getFacilityIcon(selectedFacility.id)}
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-slate-100">{selectedFacility.buildingName}</h3>
-                  <div className="text-xs text-slate-400">系统代号：{selectedFacility.name}</div>
+                  <h3 className="text-xl font-black text-white">{selectedFacility.buildingName}</h3>
+                  <div className="text-xs text-slate-300 font-medium">系统代号：{selectedFacility.name}</div>
                 </div>
               </div>
-              <span className="px-3 py-1 bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-black text-xs rounded-full">
+              <span className="px-3 py-1 bg-cyan-900 text-cyan-200 border border-cyan-500/50 font-black text-xs rounded-full">
                 LV.{selectedFacility.level} / {selectedFacility.maxLevel}
               </span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
-              <div className="font-bold text-amber-300">当前设施加成效果：</div>
-              <div className="text-slate-300 leading-relaxed">{selectedFacility.perkDesc}</div>
-              <div className="flex justify-between pt-2 border-t border-slate-800 text-[11px]">
-                <span className="text-slate-400">实时情报产出效率：</span>
-                <span className="text-cyan-400 font-bold font-num">+{selectedFacility.dataRatePerSec} 点情报 / 秒</span>
+            <div className="p-4 rounded-xl bg-[#0a1020] border border-slate-700 space-y-2 text-xs">
+              <div className="font-extrabold text-amber-300 text-sm">当前设施加成效果：</div>
+              <div className="text-slate-200 font-medium leading-relaxed text-xs">{selectedFacility.perkDesc}</div>
+              <div className="flex justify-between pt-2 border-t border-slate-750 text-xs">
+                <span className="text-slate-300">实时情报产出效率：</span>
+                <span className="text-cyan-300 font-black font-num">+{selectedFacility.dataRatePerSec} 点情报 / 秒</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
-              <div className="font-bold text-slate-200">升级至 LV.{selectedFacility.level + 1} 消耗资源：</div>
-              <div className="flex items-center justify-between text-xs">
+            <div className="p-4 rounded-xl bg-[#0a1020] border border-slate-700 space-y-2 text-xs">
+              <div className="font-extrabold text-white text-sm">升级至 LV.{selectedFacility.level + 1} 消耗资源：</div>
+              <div className="flex items-center justify-between text-xs font-bold">
                 <span className="text-cyan-300">需求情报点：{selectedFacility.upgradeCostData}</span>
                 <span className="text-amber-300">需求应急经费：${selectedFacility.upgradeCostGold}</span>
               </div>
@@ -600,15 +593,15 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setSelectedFacility(null)}
-                className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl"
+                className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold text-xs rounded-xl cursor-pointer"
               >
                 取消
               </button>
               <button
                 onClick={() => handleUpgradeFacility(selectedFacility.id)}
-                className="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs rounded-xl shadow-lg glow-gold cursor-pointer"
+                className="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow cursor-pointer"
               >
-                立即升级设施 ➔
+                生 级 设 施 ➔
               </button>
             </div>
 
@@ -616,19 +609,19 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
         </div>
       )}
 
-      {/* OFFICER ROSTER MODAL (特聘干员大厅与驻扎) */}
+      {/* OFFICER ROSTER MODAL */}
       {isRosterOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border-2 border-cyan-500/50 w-full max-w-2xl rounded-3xl p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col justify-between">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#121c33] border-2 border-slate-650 w-full max-w-2xl rounded-2xl p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col justify-between">
             
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-700 pb-3">
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-cyan-400" />
-                <h3 className="text-lg font-black text-slate-100">特聘舆情干员大厅 (养成与驻扎)</h3>
+                <h3 className="text-xl font-black text-white">特聘舆情干员大厅 (养成与驻扎)</h3>
               </div>
               <button
                 onClick={() => setIsRosterOpen(false)}
-                className="text-slate-400 hover:text-slate-200 font-bold text-xs"
+                className="text-slate-300 hover:text-white font-extrabold text-xs cursor-pointer"
               >
                 ✕ 关闭
               </button>
@@ -636,24 +629,24 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
 
             <div className="space-y-3 overflow-y-auto pr-1 flex-1">
               {officers.map(off => (
-                <div key={off.id} className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-4">
+                <div key={off.id} className="p-4 rounded-xl bg-[#0a1020] border border-slate-700 flex items-center justify-between gap-4">
                   
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center text-2xl">
+                    <div className="w-12 h-12 rounded-xl bg-[#121c33] border border-slate-700 flex items-center justify-center text-2xl">
                       {off.avatar}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-slate-100">{off.name}</span>
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
-                          off.rarity === 'UR' ? 'bg-purple-950 text-purple-300 border border-purple-500' :
-                          off.rarity === 'SSR' ? 'bg-amber-950 text-amber-300 border border-amber-500' :
-                          'bg-cyan-950 text-cyan-300 border border-cyan-500'
+                        <span className="font-extrabold text-sm text-white">{off.name}</span>
+                        <span className={`px-2 py-0.5 rounded text-xs font-black ${
+                          off.rarity === 'UR' ? 'bg-purple-900 text-purple-200 border border-purple-500' :
+                          off.rarity === 'SSR' ? 'bg-amber-900 text-amber-200 border border-amber-500' :
+                          'bg-cyan-900 text-cyan-200 border border-cyan-500'
                         }`}>
                           {off.rarity}
                         </span>
                       </div>
-                      <div className="text-xs text-slate-400 mt-0.5">
+                      <div className="text-xs text-slate-300 font-medium mt-1">
                         角色：{off.role} | LV.{off.level} (战力 {off.combatPower})
                       </div>
                     </div>
@@ -661,14 +654,14 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
 
                   <div className="flex items-center gap-3">
                     <div className="text-right text-xs">
-                      <div className="text-slate-400">状态：<span className="text-amber-400 font-bold">{off.status}</span></div>
-                      <div className="text-[10px] text-slate-500">技能：{off.skills[0]?.name}</div>
+                      <div className="text-slate-300 font-medium">状态：<span className="text-amber-400 font-bold">{off.status}</span></div>
+                      <div className="text-xs text-slate-400 mt-0.5">技能：{off.skills[0]?.name}</div>
                     </div>
                     <button
                       onClick={() => {
                         alert(`【${off.name}】等级 +1！经验增加，战力提升！`);
                       }}
-                      className="px-3 py-1.5 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 font-bold text-xs rounded-xl"
+                      className="px-3.5 py-2 bg-cyan-900 hover:bg-cyan-800 text-cyan-200 border border-cyan-500/50 font-extrabold text-xs rounded-xl cursor-pointer"
                     >
                       升 级
                     </button>
@@ -678,10 +671,10 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
               ))}
             </div>
 
-            <div className="pt-2 border-t border-slate-800 flex justify-end">
+            <div className="pt-3 border-t border-slate-700 flex justify-end">
               <button
                 onClick={() => setIsRosterOpen(false)}
-                className="px-5 py-2 bg-slate-800 text-slate-200 font-bold text-xs rounded-xl"
+                className="px-5 py-2 bg-slate-800 text-slate-100 font-extrabold text-xs rounded-xl cursor-pointer"
               >
                 完成配置
               </button>
@@ -692,7 +685,7 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
       )}
 
       {/* FOOTER */}
-      <footer className="text-center text-xs text-slate-500 z-10 pt-2 border-t border-slate-900">
+      <footer className="text-center text-xs text-slate-400 font-medium z-10 pt-2 border-t border-slate-800">
         《风暴中枢：舆情指挥官》Cocos Creator 养成系重构版 | 重新定位为“基地建造 + 干员养成 + 动态应急推演”模式
       </footer>
 
