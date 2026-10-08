@@ -7,6 +7,7 @@ import { BattlefieldView } from './components/BattlefieldView';
 import { SecretMessageView } from './components/V8Client/SecretMessageView';
 import { UserProfileModal } from './components/V8Client/UserProfileModal';
 import { MTAdminView } from './components/MTAdmin/MTAdminView';
+import { GrowthBaseView } from './components/CocosGrowth/GrowthBaseView';
 import { SettlementModal } from './components/SettlementModal';
 import { LeaderboardModal } from './components/LeaderboardModal';
 import { LevelIncidentCase, UserCertificate, SystemEquipment, DocumentErrorItem, CommentItem } from './types';
@@ -14,7 +15,7 @@ import { LevelIncidentCase, UserCertificate, SystemEquipment, DocumentErrorItem,
 export const App: React.FC = () => {
   // Navigation View State
   const [viewMode, setViewMode] = useState<
-    'portal' | 'v8-lobby' | 'v8-level-select' | 'v8-battlefield' | 'v8-practice' | 'v8-secret-chat' | 'mt-admin'
+    'portal' | 'cocos-base' | 'v8-lobby' | 'v8-level-select' | 'v8-battlefield' | 'v8-practice' | 'v8-secret-chat' | 'mt-admin'
   >('portal');
 
   // Game Progression States
@@ -28,6 +29,7 @@ export const App: React.FC = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettlementOpen, setIsSettlementOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+
 
   // 6 Real Incident Cases Progression Map
   const [levelCases, setLevelCases] = useState<LevelIncidentCase[]>([
@@ -241,13 +243,25 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#060a14] font-sans antialiased text-slate-100 select-none">
       
-      {/* ROUTE 1: ENTRY PORTAL (系统入口选择器 - V8客户端 & MT管理端) */}
+      {/* ROUTE 1: ENTRY PORTAL (系统入口选择器 - Cocos 养成系主基地 / V8 客户端 / MT 管理端) */}
       {viewMode === 'portal' && (
         <PortalSelection
+          onSelectCocosGrowth={() => setViewMode('cocos-base')}
           onSelectV8Client={() => setViewMode('v8-lobby')}
           onSelectMTAdmin={() => setViewMode('mt-admin')}
         />
       )}
+
+      {/* ROUTE 1.5: COCOS CREATOR GROWTH SYSTEM BASE (全新 Cocos 养成系指挥主基地) */}
+      {viewMode === 'cocos-base' && (
+        <GrowthBaseView
+          onReturnToPortal={() => setViewMode('portal')}
+          onOpenLevelSelect={() => setViewMode('v8-level-select')}
+          onOpenPractice={() => setViewMode('v8-practice')}
+          onOpenProfile={() => setIsProfileOpen(true)}
+        />
+      )}
+
 
       {/* ROUTE 2: V8 CLIENT LOBBY (V8客户端 - 游戏大厅) */}
       {viewMode === 'v8-lobby' && (

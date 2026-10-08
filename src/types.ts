@@ -92,3 +92,74 @@ export interface CommentItem {
   likes: number;
   timeAgo: string;
 }
+
+// ==========================================
+// Cocos Creator 养成系重构新增类型定义
+// ==========================================
+
+export type FacilityId = SystemId;
+
+export interface BaseFacility {
+  id: FacilityId;
+  name: string;
+  buildingName: string; // 养成系设施名称 (如：谛听天眼情报阵列)
+  level: number;
+  maxLevel: number;
+  upgradeCostData: number; // 升级所需情报点
+  upgradeCostGold: number; // 升级所需应急经费
+  dataRatePerSec: number;  // 每秒情报产出
+  computeRatePerSec: number; // 每秒算力产出
+  assignedOfficerId: string | null; // 当前驻扎特聘干员ID
+  perkDesc: string; // 设施加成描述
+  unlocked: boolean;
+}
+
+export type OfficerRole = '舆情分析师' | '公文审校员' | '网评先锋' | '指挥调度员' | '境外防御专家';
+export type OfficerRarity = 'SR' | 'SSR' | 'UR';
+
+export interface OfficerSkill {
+  id: string;
+  name: string;
+  desc: string;
+  icon: string;
+}
+
+export interface OfficerItem {
+  id: string;
+  name: string;
+  avatar: string;
+  role: OfficerRole;
+  rarity: OfficerRarity;
+  level: number;
+  maxLevel: number;
+  exp: number;
+  maxExp: number;
+  combatPower: number; // 战力值
+  skills: OfficerSkill[];
+  assignedFacilityId: FacilityId | null;
+  status: '空闲' | '驻扎中' | '外派处置中';
+}
+
+export interface GameResources {
+  trustScore: number;     // 公信力 (0~100)
+  dataPoints: number;     // 情报点数
+  computePower: number;   // 舆情算力
+  goldCoins: number;      // 应急经费
+  honorMedals: number;    // 荣誉勋章
+}
+
+export interface EmergencyEvent {
+  id: string;
+  title: string;
+  category: string;
+  difficulty: '普通' | '紧急' | '特急';
+  timeLeftSeconds: number;
+  maxTimeSeconds: number;
+  requiredRole: OfficerRole;
+  rewardData: number;
+  rewardGold: number;
+  trustPenalty: number;
+  assignedOfficerId: string | null;
+  status: '待处置' | '处置中' | '已化解';
+}
+
