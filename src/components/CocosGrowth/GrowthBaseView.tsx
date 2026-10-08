@@ -3,9 +3,10 @@ import {
   Building2, Shield, Zap, Database, Award, ArrowUpCircle, UserPlus, Flame, 
   Clock, AlertTriangle, CheckCircle2, ChevronRight, Sparkles, RefreshCw, Users,
   Home, Play, Coins, ShieldAlert, Cpu, Radio, Target, Search, MessageSquareText,
-  FileText, Globe, ShieldCheck
+  FileText, Globe, ShieldCheck, Monitor
 } from 'lucide-react';
 import { BaseFacility, OfficerItem, GameResources, EmergencyEvent } from '../../types';
+import { Pixi2DGameCanvas } from './Pixi2DGameCanvas';
 
 interface GrowthBaseViewProps {
   onReturnToPortal: () => void;
@@ -20,6 +21,8 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
   onOpenPractice,
   onOpenProfile
 }) => {
+  const [mapMode, setMapMode] = useState<'pixi-2d' | 'cards'>('pixi-2d');
+
   // 1. Core Resources State (Live Ticker)
   const [resources, setResources] = useState<GameResources>({
     trustScore: 94,
@@ -402,15 +405,34 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
             <div>
               <h2 className="text-xl font-black text-white flex items-center gap-2 tracking-wide">
                 <Building2 className="w-5 h-5 text-cyan-400" />
-                <span>舆情基地建筑全景图</span>
+                <span>舆情基地 2D 全景图</span>
               </h2>
-              <p className="text-xs text-slate-300 font-medium mt-0.5">点击建筑进行升级、分配驻扎干员并提升自动情报产出率</p>
+              <p className="text-xs text-slate-300 font-medium mt-0.5">支持 Pixi.js 2D 画布引擎视图与标准设施卡片视图自由切换</p>
             </div>
             
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
+              <div className="flex bg-[#0a1020] p-1 rounded-xl border border-slate-700">
+                <button
+                  onClick={() => setMapMode('pixi-2d')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    mapMode === 'pixi-2d' ? 'bg-[#2563eb] text-white shadow' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🎮 Pixi 2D引擎视图
+                </button>
+                <button
+                  onClick={() => setMapMode('cards')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    mapMode === 'cards' ? 'bg-[#2563eb] text-white shadow' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  📋 设施卡片视图
+                </button>
+              </div>
+
               <button
                 onClick={onOpenPractice}
-                className="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 font-extrabold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer"
+                className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 font-extrabold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer ml-1"
               >
                 <Target className="w-4 h-4" />
                 <span>进入特训靶场</span>
@@ -418,57 +440,65 @@ export const GrowthBaseView: React.FC<GrowthBaseViewProps> = ({
               
               <button
                 onClick={onOpenLevelSelect}
-                className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs rounded-xl shadow flex items-center gap-2 cursor-pointer border border-cyan-400/40"
+                className="px-3.5 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs rounded-xl shadow flex items-center gap-1.5 cursor-pointer border border-cyan-400/40"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>出征推演关卡 ➔</span>
+                <span>出征推演 ➔</span>
               </button>
             </div>
           </div>
 
-          {/* 8 Tech Facilities Grid (High Readability) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 relative z-10">
-            {facilities.map(fac => {
-              const assignedOfficer = officers.find(o => o.id === fac.assignedOfficerId);
-              return (
-                <div
-                  key={fac.id}
-                  onClick={() => setSelectedFacility(fac)}
-                  className="p-4 rounded-xl bg-[#0a1020] border-2 border-slate-700 hover:border-cyan-400 transition-all cursor-pointer group flex flex-col justify-between h-40 shadow-md"
-                >
-                  {/* Facility Card Top Info */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="p-2 rounded-lg bg-[#121c33] border border-slate-700 group-hover:scale-105 transition-transform">
-                        {getFacilityIcon(fac.id)}
+          {/* Render Map Mode: Pixi 2D Canvas or Card Grid */}
+          {mapMode === 'pixi-2d' ? (
+            <Pixi2DGameCanvas
+              facilities={facilities}
+              onSelectFacility={(fac) => setSelectedFacility(fac)}
+            />
+          ) : (
+            /* 8 Tech Facilities Grid (High Readability Cards) */
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 relative z-10">
+              {facilities.map(fac => {
+                const assignedOfficer = officers.find(o => o.id === fac.assignedOfficerId);
+                return (
+                  <div
+                    key={fac.id}
+                    onClick={() => setSelectedFacility(fac)}
+                    className="p-4 rounded-xl bg-[#0a1020] border-2 border-slate-700 hover:border-cyan-400 transition-all cursor-pointer group flex flex-col justify-between h-40 shadow-md"
+                  >
+                    {/* Facility Card Top Info */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="p-2 rounded-lg bg-[#121c33] border border-slate-700 group-hover:scale-105 transition-transform">
+                          {getFacilityIcon(fac.id)}
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded bg-cyan-900 text-cyan-200 border border-cyan-500/50 text-xs font-black font-num">
+                          LV.{fac.level}
+                        </span>
                       </div>
-                      <span className="px-2.5 py-0.5 rounded bg-cyan-900 text-cyan-200 border border-cyan-500/50 text-xs font-black font-num">
-                        LV.{fac.level}
-                      </span>
+
+                      <div className="font-black text-sm text-white group-hover:text-cyan-300 transition-colors truncate">
+                        {fac.buildingName}
+                      </div>
+                      <div className="text-xs text-slate-300 font-medium truncate mt-0.5">{fac.name}</div>
                     </div>
 
-                    <div className="font-black text-sm text-white group-hover:text-cyan-300 transition-colors truncate">
-                      {fac.buildingName}
+                    {/* Facility Bottom Status & Assigned Officer */}
+                    <div className="pt-2 border-t border-slate-750 flex items-center justify-between text-xs">
+                      <span className="text-cyan-300 font-bold font-num">+{fac.dataRatePerSec}点/s</span>
+                      {assignedOfficer ? (
+                        <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-200 border border-amber-500/50 text-xs font-bold flex items-center gap-1">
+                          <span>{assignedOfficer.avatar}</span>
+                          <span className="truncate max-w-[50px]">{assignedOfficer.name}</span>
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 text-xs font-semibold">可驻扎</span>
+                      )}
                     </div>
-                    <div className="text-xs text-slate-300 font-medium truncate mt-0.5">{fac.name}</div>
                   </div>
-
-                  {/* Facility Bottom Status & Assigned Officer */}
-                  <div className="pt-2 border-t border-slate-750 flex items-center justify-between text-xs">
-                    <span className="text-cyan-300 font-bold font-num">+{fac.dataRatePerSec}点/s</span>
-                    {assignedOfficer ? (
-                      <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-200 border border-amber-500/50 text-xs font-bold flex items-center gap-1">
-                        <span>{assignedOfficer.avatar}</span>
-                        <span className="truncate max-w-[50px]">{assignedOfficer.name}</span>
-                      </span>
-                    ) : (
-                      <span className="text-slate-400 text-xs font-semibold">可驻扎</span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Bottom Interactive Guidance */}
           <div className="mt-4 p-3.5 rounded-xl bg-[#0a1020] border border-slate-700 flex items-center justify-between text-xs relative z-10">
